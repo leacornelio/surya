@@ -39,14 +39,17 @@ class DetectionModelLoader(ModelLoader):
         )
 
         # Handle meta device properly
-        if hasattr(model, "parameters"):
-            params = list(model.parameters())
-            if params and hasattr(params[0], "device") and params[0].device.type == "meta":
+        try:
+            # Use next() with iterator to avoid materializing all params
+            first_param = next(iter(model.parameters()))
+            if first_param.device.type == "meta":
                 model = model.to_empty(device=device)
             else:
                 model = model.to(device)
-        else:
+        except StopIteration:
+            # Model has no parameters, safe to use regular .to()
             model = model.to(device)
+
         model = model.eval()
 
         if settings.COMPILE_ALL or settings.COMPILE_DETECTOR:
