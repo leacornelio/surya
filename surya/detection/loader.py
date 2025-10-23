@@ -38,6 +38,15 @@ class DetectionModelLoader(ModelLoader):
             config=config,
         )
         model = model.to(device)
+        # Handle meta device properly
+        if hasattr(model, "parameters"):
+            params = list(model.parameters())
+            if params and hasattr(params[0], "device") and params[0].device.type == "meta":
+                model = model.to_empty(device=device)
+            else:
+                model = model.to(device)
+        else:
+            model = model.to(device)
         model = model.eval()
 
         if settings.COMPILE_ALL or settings.COMPILE_DETECTOR:
