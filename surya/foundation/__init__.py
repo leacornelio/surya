@@ -777,9 +777,6 @@ class FoundationPredictor(BasePredictor):
             if (
                 self.num_empty_slots / batch_size
             ) >= self.min_prefill_ratio and self.prompt_queue:
-                # Before processing each batch, reset the cache:
-                if hasattr(self, 'kv_cache'):
-                    self.kv_cache = None  # Force recreation with correct batch size
                 updated_inputs, outputs, merge_idxs = self.prefill(
                     current_inputs, max_lookahead_tokens=0
                 )
