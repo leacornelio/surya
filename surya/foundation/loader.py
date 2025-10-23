@@ -68,7 +68,18 @@ class FoundationModelLoader(ModelLoader):
 
         model = model_cls.from_pretrained(
             self.checkpoint, dtype=dtype, config=config, ignore_mismatched_sizes=True
-        ).to(device)
+        )
+        
+        # Handle meta device properly
+        if hasattr(model, "parameters"):
+            params = list(model.parameters())
+            if params and hasattr(params[0], "device") and params[0].device.type == "meta":
+                model = model.to_empty(device=device)
+            else:
+                model = model.to(device)
+        else:
+            model = model.to(device)
+
         model = model.eval()
 
         if settings.COMPILE_ALL or settings.COMPILE_FOUNDATION:
