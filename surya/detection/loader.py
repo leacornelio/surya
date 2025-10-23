@@ -37,7 +37,7 @@ class DetectionModelLoader(ModelLoader):
             dtype=dtype,
             config=config,
         )
-        model = model.to(device)
+
         # Handle meta device properly
         if hasattr(model, "parameters"):
             params = list(model.parameters())

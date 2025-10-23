@@ -54,7 +54,6 @@ class TableRecModelLoader(ModelLoader):
             self.checkpoint, config=config, dtype=dtype
         )
 
-        model = model.to(device)
         # Handle meta device properly
         if hasattr(model, "parameters"):
             params = list(model.parameters())
